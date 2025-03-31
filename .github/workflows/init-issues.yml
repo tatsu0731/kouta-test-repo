@@ -1,32 +1,23 @@
-name: Init Issues
+name: Init Single Issue
 
 on:
   push:
     paths:
-      - '.github/init-issues.json'
+      - '.github/init-issue.json'
     branches:
       - main
 
 jobs:
-  create_issues:
+  create_issue:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Load and Create Issues
-        uses: actions/github-script@v6
+      - name: Create Issue
+        uses: peter-evans/create-issue-from-file@v4
         with:
-          script: |
-            const fs = require('fs');
-            const issues = JSON.parse(fs.readFileSync('.github/init-issues.json', 'utf8'));
-
-            for (const issue of issues) {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: issue.title,
-                body: issue.body
-              });
-            }
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "リポジトリ準備: READMEの更新"
+          content-filepath: .github/init-issue.json
